@@ -125,10 +125,12 @@ if ($block_info) {
 
     // quick, just 500ms to display, must set /feature/gene/ to dispaly gene feature, not universal
     if ($id1 != 'NA') {
-      $id1_table = l($id1, "/feature/gene/" . $id1, array('html' => TRUE));
+      $nid1 = chado_get_nid_from_id ('feature', tripal_syncview_get_feature_id($id1));
+      $id1_table = l($id1, "/node/" . $nid1, array('html' => TRUE));
     }
     if ($id2 != 'NA') {
-      $id2_table = l($id2, "/feature/gene/" . $id2, array('html' => TRUE));
+      $nid2 = chado_get_nid_from_id ('feature', tripal_syncview_get_feature_id($id2));
+      $id2_table = l($id2, "/node/" . $nid2, array('html' => TRUE));
     }
 
     $rows[] = array(

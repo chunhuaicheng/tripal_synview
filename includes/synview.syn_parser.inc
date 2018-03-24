@@ -41,6 +41,7 @@ function synview_parse_synfile($syn_org1, $syn_org2, $syn_path) {
     'orthologous_to' => NULL, 
     'member_of' => NULL,
     'gene' => NULL,
+    'mRNA' => NULL
   );
   foreach ($terms as $name => $term_id) {
     $cvterm = chado_select_record('cvterm', array('cvterm_id'), array('name'=>$name, 'cv_id'=>array('name' => 'sequence')));
@@ -62,10 +63,10 @@ function synview_parse_synfile($syn_org1, $syn_org2, $syn_path) {
   }
 
   // load block to chado database
-  $transaction = db_transaction();
+/*   $transaction = db_transaction();
   print "\nNOTE: Loading of synteny file is performed using a database transaction. \n" .
      "If the load fails or is terminated prematurely then the entire set of \n" .
-     "insertions/updates is rolled back and will not be found in the database\n\n";
+     "insertions/updates is rolled back and will not be found in the database\n\n"; */
   try {
     if (count($syn_data) > 0 ) {
 
@@ -222,8 +223,8 @@ function synview_parse_synfile($syn_org1, $syn_org2, $syn_path) {
   catch (Exception $e) {
     print "\n"; // make sure we start errors on new line
     watchdog_exception('T_synfile_loader', $e);
-    $transaction->rollback();
-    print "FAILED: Rolling back database changes...\n";
+/*     $transaction->rollback();
+    print "FAILED: Rolling back database changes...\n"; */
   }
   print "\nDone.\n";
   return;
@@ -315,7 +316,7 @@ function synview_check_synfile($syn_org1, $syn_org2, $syn_path, $terms) {
       $synblk = db_query('SELECT blockid FROM {synblock} WHERE blockid=:block_id ', array(':block_id' => $line[1]))->fetchObject();
       if (!empty($synblk)) {
         print "\nFAILED: the block $line[1] has already exist in synblock table\n";
-        exit; 
+        //exit; 
       }
     }
     elseif ($line[0] == "#BL") {
@@ -342,14 +343,14 @@ function synview_check_synfile($syn_org1, $syn_org2, $syn_path, $terms) {
       $blk_value .= $line[2] . "\t" . $line[3] . "\t" . $line[4] . "\n";
 
       if ($line[2] != 'NA') {
-        $fid = chado_check_feature_exist($syn_org1, $line[2], $terms['gene'], 1);
+        $fid = chado_check_feature_exist($syn_org1, $line[2], $terms['mRNA'], 1);
         $block['gene1'][] = array($line[2], $fid);
       } else {
         $block['gene1'][] = array($line[2], 'NA');
       }
 
       if ($line[3] != 'NA') {
-        $fid = chado_check_feature_exist($syn_org2, $line[3], $terms['gene'], 1);
+        $fid = chado_check_feature_exist($syn_org2, $line[3], $terms['mRNA'], 1);
         $block['gene2'][] = array($line[3], $fid);
       } else {
         $block['gene2'][] = array($line[3], 'NA');

@@ -4,18 +4,13 @@
 //dpm($_SESSION['tripal_synview_search']);
 
 // prepare info for searching syntenic Blocks
-$org_id  = $_SESSION['tripal_synview_search']['SELECT_GENOME'];
+$genome_id  = $_SESSION['tripal_synview_search']['SELECT_GENOME'];
 $chr_id  = $_SESSION['tripal_synview_search']['SELECT_CHR'];
-$chr     = $_SESSION['tripal_synview_search']['REF'][$org_id][$chr_id];
+$chr     = $_SESSION['tripal_synview_search']['REF'][$genome_id][$chr_id];
 //$start   = $_SESSION['tripal_synview_search']['START'];
 //$end     = $_SESSION['tripal_synview_search']['END'];
 
-$ref_orgs = array(); 
-foreach ($_SESSION['tripal_synview_search']['REFORG'] as $oid => $org_common_name) {
-  $ref_orgs[]=l($org_common_name, 'orgamism/' . $oid);
-}
-
-$org_info = chado_generate_var('organism', array('organism_id'=>$org_id));
+$genome_info = chado_generate_var('analysis', array('analysis_id'=>$genome_id));
 
 //$ac_left  = l("<<<", "synview/search/result/left");
 //$ac_right = l(">>>", "synview/search/result/right");
@@ -33,14 +28,14 @@ print $breadcrumb;
 
 // print info for searching
 print '<p><b>Selected genome and location: </b><br>';
-print ' -> Genome: ' . $org_info->common_name . '<br>';
+print ' -> Genome: ' . $genome_info->name . '<br>';
 print ' -> Location: ' . $reference . '<br></p>';
 print '<p><b>Genome(s) for comparison: </b></p>';
 print '</div></div>';
 
 $tab_li = ''; $tab_content = ''; $tab_li_class = ''; $tab_content_class = ''; $tab_table = '';
 $tab_n = 0;
-$headers = array('Block' , 'Organism1 (location)', 'Organism2 (location)', 'score', 'evalue');
+$headers = array('Block' , 'Genome1 (location)', 'Genome2 (location)', 'score', 'evalue');
 
 foreach ($jdata as $d) {
   if ($tab_n == 0) { $tab_li_class = 'class="active"'; } else { $tab_li_class = ''; }
@@ -55,22 +50,22 @@ foreach ($jdata as $d) {
     $block_id = $link['bid'];
     $b = $blocks[$block_id];
     $block_id = l($block_id, "synview/block/". $block_id, array('attributes' => array('target' => "_blank")));
-    $organism1 = $b->b1_org . "<br>" . $b->b1_sid . " : ". $b->b1_fmin . " - ".$b->b1_fmax;
-    $organism2 = $b->b2_org . "<br>" . $b->b2_sid . " : ". $b->b2_fmin . " - ".$b->b2_fmax;
+    $genome1 = $b->b1_genome . "<br>" . $b->b1_sid . " : ". $b->b1_fmin . " - ".$b->b1_fmax;
+    $genome2 = $b->b2_genome . "<br>" . $b->b2_sid . " : ". $b->b2_fmin . " - ".$b->b2_fmax;
 
     if ($n % 2 == 1) {
         $rows[] = array(
           array('data'=> $block_id,  'width' => '10%', 'bgcolor' => $color),
-          array('data'=> $organism1, 'width' => '20%', 'bgcolor' => $color),
-          array('data'=> $organism2, 'width' => '20%', 'bgcolor' => $color),
+          array('data'=> $genome1, 'width' => '20%', 'bgcolor' => $color),
+          array('data'=> $genome2, 'width' => '20%', 'bgcolor' => $color),
           array('data'=> $b->score,  'width' => '10%', 'bgcolor' => $color),
           array('data'=> $b->evalue, 'width' => '10%', 'bgcolor' => $color),
         );
     } else {
         $rows[] = array(
           array('data'=> $block_id, 'width' => '10%'),
-          array('data'=> $organism1, 'width' => '20%'),
-          array('data'=> $organism2, 'width' => '20%'),
+          array('data'=> $genome1, 'width' => '20%'),
+          array('data'=> $genome2, 'width' => '20%'),
           array('data'=> $b->score, 'width' => '10%'),
           array('data'=> $b->evalue, 'width' => '10%'),
         );

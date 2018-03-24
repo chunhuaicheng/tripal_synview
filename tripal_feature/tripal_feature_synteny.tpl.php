@@ -32,8 +32,7 @@ $paralogs_obj = array();
 $orthlogs_sbj = array();
 $orthlogs_obj = array();
 
-if (count($object_rels) > 0 or count($subject_rels) > 0) { ?>
-  <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div> <?php
+if (count($object_rels) > 0 or count($subject_rels) > 0) {
 
   // first add in the subject relationships.
   foreach ($subject_rels as $rel_type => $rels){
@@ -44,7 +43,7 @@ if (count($object_rels) > 0 or count($subject_rels) > 0) { ?>
     }
 
     foreach ($rels as $obj_type => $objects){
-      if ($obj_type == 'gene') {
+      if ($obj_type == 'gene' || $obj_type == 'mRNA') {
         if ($rel_type == 'paralogous to') {
           $paralogs_obj = $objects;
         }
@@ -66,7 +65,7 @@ if (count($object_rels) > 0 or count($subject_rels) > 0) { ?>
     foreach ($rels as $subject_type => $subjects){
       $verb = 'are';
       // only consider the gene feature as paralogous or orthlogous
-      if ($subject_type == 'gene') { 
+      if ($subject_type == 'gene' || $subject_type == 'mRNA') { 
         if ($rel_type == 'paralogous to') {
           $paralogs_sbj = $subjects;
         }
@@ -81,11 +80,11 @@ if (count($object_rels) > 0 or count($subject_rels) > 0) { ?>
 /**
  * Display paralogs and orthlogs for gene feature
  */ 
-if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) {
-
-  ?><p>The following gene(s) are <b>paralogous to</b> this gene:</p><?php
+if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
+  <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div>
+    <p>The following gene(s) are <b>paralogous to</b> this gene:</p><?php
   $rows = array();
-  $headers = array('Gene' , 'Paralogous', 'Organism', 'Block');
+  $headers = array('Feature' , 'Paralogous', 'Organism', 'Block');
 
   foreach ($paralogs_obj as $paralog) {
     $gene_name = $paralog->record->subject_id->name;
@@ -153,7 +152,7 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
 
   ?><p>The following gene(s) are <b>orthologous to</b> this gene:</p><?php
   $rows = array();
-  $headers = array('Gene', 'Orthologous', 'Organism', 'Block');
+  $headers = array('Feature', 'Orthologous', 'Organism', 'Block');
 
   foreach ($orthlogs_obj as $orthlog) {
     $gene_name = $orthlog->record->subject_id->name;

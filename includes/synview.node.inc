@@ -70,17 +70,10 @@ function synteny_form($node, &$form_state) {
   // generate options for organisms
   $first_opt = array('SELECT_G' => 'Select a genome');
 
-  $org_select = chado_select_record(
-    'organism',
-    array('organism_id', 'common_name'),
-    array()
-  );
-  foreach ($org_select as $org) {
-    $org_opts[$org->organism_id] = $org->common_name;
-  }
-
-  $form['#org_opts']  = $org_opts; // pass org array through from
-  $org_opts = $first_opt + $org_opts;
+  $genome_opts = tripal_synview_get_genomes();
+  
+  $form['#genome_opts']  = $genome_opts; // pass org array through from
+  $genome_opts = $first_opt + $genome_opts;
 
   $form['core'] = array(
     '#type' => 'fieldset',
@@ -95,22 +88,22 @@ function synteny_form($node, &$form_state) {
     '#description' => t('For example: synteny analysis for cucumber PI and cucumbery Gy14, or synteny analysis for melon'),
   );
 
-  $form['core']['syn_org1'] = array(
+  $form['core']['syn_genome1'] = array(
     '#type' => 'select',
     '#title' => t('Select Genome 1'),
     '#description' => t('For example，cucumber (PI89643)'),
-    '#options' => $org_opts,
+    '#options' => $genome_opts,
     '#required' => TRUE,
-    '#default_value' => isset($node->syn_org1) ? $node->syn_org1 : '',
+    '#default_value' => isset($node->syn_genome1) ? $node->syn_genome1 : '',
   );
 
-  $form['core']['syn_org2'] = array(
+  $form['core']['syn_genome2'] = array(
     '#type' => 'select',
     '#title' => t('Select Genome 2'),
     '#description' => t('For example，cucumber (Gy14). The organism 1 and organism 2 can be same!'),
-    '#options' => $org_opts,
+    '#options' => $genome_opts,
     '#required' => TRUE,
-    '#default_value' => isset($node->syn_org2) ? $node->syn_org2 : '',
+    '#default_value' => isset($node->syn_genome2) ? $node->syn_genome2 : '',
   );
 
 
@@ -151,8 +144,8 @@ function synteny_insert($node) {
   db_insert('synfile')->fields(array(
     'nid'        => $node->nid,
     'synname'    => $node->syn_name,
-    'genome1'    => $node->syn_org1,
-    'genome2'    => $node->syn_org2,
+    'genome1'    => $node->syn_genome1,
+    'genome2'    => $node->syn_genome2,
     'synpath'    => $node->syn_path,
     'install'    => $node->syn_install,
   ))->execute();
@@ -181,8 +174,8 @@ function synteny_update($node) {
   // Update the record.
   db_update('synfile')->fields(array(
     'synname'    => $node->syn_name,
-    'genome1'    => $node->syn_org1,
-    'genome2'    => $node->syn_org2,
+    'genome1'    => $node->syn_genome1,
+    'genome2'    => $node->syn_genome2,
     'synpath'    => $node->syn_path,
     'install'    => $node->syn_install,
   ))->condition('nid', $node->nid)->execute();
@@ -232,8 +225,8 @@ function synteny_load($nodes) {
   foreach ($result as $record) {
     $nodes[$record->nid]->title = $record->synname;
     $nodes[$record->nid]->syn_name = $record->synname;
-    $nodes[$record->nid]->syn_org1 = $record->genome1;
-    $nodes[$record->nid]->syn_org2 = $record->genome2;
+    $nodes[$record->nid]->syn_genome1 = $record->genome1;
+    $nodes[$record->nid]->syn_genome2 = $record->genome2;
     $nodes[$record->nid]->syn_path = $record->synpath;
     $nodes[$record->nid]->syn_install = $record->install;
   }
