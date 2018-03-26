@@ -123,7 +123,14 @@ function tripal_synview_get_organism_id ($analysis_id) {
 function tripal_synview_get_ref_sequences($analysis_id) {
   $seqs = array();
   if (is_numeric($analysis_id)) {
-    $sql = "SELECT DISTINCT srcfeature_id AS feature_id, (SELECT name FROM {feature} WHERE feature_id = srcfeature_id) AS name FROM {feature} F 
+    $sql = "
+      SELECT 
+      DISTINCT 
+        srcfeature_id AS feature_id, 
+        (SELECT seqlen FROM {feature} WHERE feature_id = srcfeature_id) AS seqlen,
+        (SELECT name FROM {feature} WHERE feature_id = srcfeature_id) AS name,
+        (SELECT uniquename FROM {feature} WHERE feature_id = srcfeature_id) AS uniquename 
+      FROM {feature} F 
       INNER JOIN {featureloc} FL ON F.feature_id = FL.feature_id
       INNER JOIN {analysisfeature} AF ON AF.feature_id = FL.srcfeature_id 
       WHERE type_id = (SELECT cvterm_id FROM {cvterm} WHERE name = 'syntenic_region') 
@@ -133,6 +140,8 @@ function tripal_synview_get_ref_sequences($analysis_id) {
     $results = chado_query($sql, array(':organism_id' => tripal_synview_get_organism_id($analysis_id), ':analysis_id' => $analysis_id));
     while ($ref = $results->fetchObject()) {
       $seqs[$ref->feature_id] = $ref->name;
+      $_SESSION['tripal_synview_search']['REF'][$analysis_id] [$ref->feature_id] = $ref->uniquename;
+      $_SESSION['tripal_synview_search']['RLEN'][$analysis_id] [$ref->feature_id] = $ref->seqlen;
     }
   }
   return $seqs;
