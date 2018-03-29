@@ -248,9 +248,18 @@ function synview_search_result($action) {
   // jdata: array for json data
   $jdata = array();
 
-  $sql_loc = "SELECT FL.srcfeature_id, FL.feature_id, FL.fmin, FL.fmax, FL.strand, AF.analysis_id, (SELECT name FROM chado.analysis Where analysis_id = AF.analysis_id) AS genome 
-    FROM chado.featureloc FL
-    INNER JOIN chado.analysisfeature AF ON AF.feature_id = FL.srcfeature_id WHERE FL.feature_id = :feature_id";
+  $sql_loc = "
+    SELECT 
+      FL.srcfeature_id, 
+      FL.feature_id, 
+      FL.fmin, 
+      FL.fmax, 
+      FL.strand, 
+      AF.analysis_id, 
+      (SELECT name FROM {analysis} Where analysis_id = AF.analysis_id) AS genome,
+      (SELECT value FROM {analysisprop} Where analysis_id = AF.analysis_id AND type_id = (SELECT cvterm_id FROM {cvterm} WHERE name = 'Short Name' AND cv_id = (SELECT cv_id FROM {cv} WHERE name = 'analysis_property'))) AS short_name 
+    FROM {featureloc} FL
+    INNER JOIN {analysisfeature} AF ON AF.feature_id = FL.srcfeature_id WHERE FL.feature_id = :feature_id";
 
   $counter = 0;$option = 0;  
   foreach ($res as $b) {
@@ -282,6 +291,7 @@ function synview_search_result($action) {
         if (!array_key_exists($loc1->analysis_id, $jdata) ) {
           $jdata[$loc1->analysis_id] = array();
           $jdata[$loc1->analysis_id]['name'] = $loc1->genome;
+          $jdata[$loc1->analysis_id]['short_name'] = $loc1->short_name;
           $jdata[$loc1->analysis_id]['canvas'] = 'canvas' . $loc1->analysis_id;
           $jdata[$loc1->analysis_id]['ideoCollection'] = array();
           $jdata[$loc1->analysis_id]['bedCollection']  = array();
@@ -342,6 +352,7 @@ function synview_search_result($action) {
         if (!array_key_exists($loc1->analysis_id, $jdata) ) {
           $jdata[$loc1->analysis_id] = array();
           $jdata[$loc1->analysis_id]['name'] = $loc1->genome;
+          $jdata[$loc1->analysis_id]['short_name'] = $loc1->short_name;
           $jdata[$loc1->analysis_id]['canvas'] = 'canvas' . $loc1->analysis_id;
           $jdata[$loc1->analysis_id]['ideoCollection'] = array();
           $jdata[$loc1->analysis_id]['bedCollection']  = array();
@@ -402,6 +413,7 @@ function synview_search_result($action) {
         if (!array_key_exists($loc2->analysis_id, $jdata) ) {
           $jdata[$loc2->analysis_id] = array();
           $jdata[$loc2->analysis_id]['name'] = $loc2->genome;
+          $jdata[$loc2->analysis_id]['short_name'] = $loc2->short_name;
           $jdata[$loc2->analysis_id]['canvas'] = 'canvas' . $loc2->analysis_id;
           $jdata[$loc2->analysis_id]['ideoCollection'] = array();
           $jdata[$loc2->analysis_id]['bedCollection']  = array();

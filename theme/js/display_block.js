@@ -3,7 +3,7 @@
 
 	// set the svg and other parameters for drawing synteny genes
 	var svg = d3.select("#svg"),
-		margin = { left:240, right:100, top:100, bottom:100},
+		margin = { left:220, right:100, top:100, bottom:100},
 		wsvg  = +svg.attr("width"),
 		hsvg  = +svg.attr("height"),
 		width = +svg.attr("width") - margin.left - margin.right,

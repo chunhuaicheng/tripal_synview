@@ -40,7 +40,8 @@ $headers = array('Block' , 'Genome1 (location)', 'Genome2 (location)', 'score', 
 foreach ($jdata as $d) {
   if ($tab_n == 0) { $tab_li_class = 'class="active"'; } else { $tab_li_class = ''; }
   if ($tab_n == 0) { $tab_content_class = 'class="tab-pane active"'; } else { $tab_content_class = 'class="tab-pane"';}
-  $tab_li .= '<li '.$tab_li_class.'> <a href="#panel-' . $d['canvas'] . '" data-toggle="tab">' . $d['name'] . '</a> </li>';
+  $display_name = $d['short_name'] ? $d['short_name'] : $d['name'];
+  $tab_li .= '<li '.$tab_li_class.'> <a href="#panel-' . $d['canvas'] . '" data-toggle="tab">' . $display_name . '</a> </li>';
 
   // generate block table
   $rows = array();
