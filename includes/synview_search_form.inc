@@ -109,7 +109,7 @@ function synview_search_form($form, $form_state) {
     '#default_value' => ' Search ',
   );
 
-  $form['#prefix'] = '<div class="row"> <div class="col-md-8 col-md-offset-2">';
+  $form['#prefix'] = '<div class="row"> <div class="col-md-9">';
   $form['#suffix'] = '</div> </div>';
 
   return $form;

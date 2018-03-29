@@ -147,14 +147,20 @@ function tripal_synview_get_ref_sequences($analysis_id) {
   return $seqs;
 }
 
-function tripal_syncview_get_feature_id ($uniquename, $types = array('mRNA', 'gene')) {
+function tripal_syncview_get_feature ($uniquename, $types = array('mRNA', 'gene'), $organism_id = NULL) {
   $sql = 
-  "SELECT feature_id FROM {feature} 
+  "SELECT feature_id, name FROM {feature} 
     WHERE uniquename = :uniquename 
     AND type_id IN 
       (SELECT cvterm_id FROM {cvterm} 
        WHERE name IN (:types)
        AND cv_id =
          (SELECT cv_id FROM {cv} WHERE name = 'sequence'))";
-  return chado_query($sql, array(':uniquename' => $uniquename, ':types' => $types))->fetchField();
+  if ($organism_id) {
+    $sql .= " AND organism_id = :organism_id";
+    return chado_query($sql, array(':uniquename' => $uniquename, ':types' => $types, ':organism_id' => $organism_id))->fetchObject();
+  }
+  else {
+    return chado_query($sql, array(':uniquename' => $uniquename, ':types' => $types))->fetchObject();
+  }
 }

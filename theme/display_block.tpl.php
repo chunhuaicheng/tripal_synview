@@ -125,12 +125,14 @@ if ($block_info) {
 
     // quick, just 500ms to display, must set /feature/gene/ to dispaly gene feature, not universal
     if ($id1 != 'NA') {
-      $nid1 = chado_get_nid_from_id ('feature', tripal_syncview_get_feature_id($id1));
-      $id1_table = l($id1, "/node/" . $nid1, array('html' => TRUE));
+      $f1 = tripal_syncview_get_feature($id1, array('mRNA', 'gene'), $b1->organism_id->organism_id);
+      $nid1 = chado_get_nid_from_id ('feature', $f1->feature_id);
+      $id1_table = l($f1->name, "/node/" . $nid1, array('html' => TRUE));
     }
     if ($id2 != 'NA') {
-      $nid2 = chado_get_nid_from_id ('feature', tripal_syncview_get_feature_id($id2));
-      $id2_table = l($id2, "/node/" . $nid2, array('html' => TRUE));
+      $f2 = tripal_syncview_get_feature($id2, array('mRNA', 'gene'), $b2->organism_id->organism_id);
+      $nid2 = chado_get_nid_from_id ('feature', $f2->feature_id);
+      $id2_table = l($f2->name, "/node/" . $nid2, array('html' => TRUE));
     }
 
     $rows[] = array(
@@ -185,8 +187,8 @@ if ($block_info) {
  
   print '
 <div class="row"> 
-	<div class="col-md-6"> <svg id="svg" width="1000" height="800"></svg> </div>
-	<div class="col-md-6">' . $table_html . '</div> 
+	<div class="col-md-7"> <svg id="svg" width="1000" height="800"></svg> </div>
+	<div class="col-md-5">' . $table_html . '</div> 
 </div>';
 }
 
