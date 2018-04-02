@@ -257,8 +257,6 @@ function synview_search_form_submit($form, &$form_state) {
 function ajax_synview_location_callback($form, $form_state) {
   $select_chr = $form['LOCATION']['SELECT_CHR'];
   $genome_id = $form_state['values']['SELECT_GENOME'];
-  $ref_sequences = tripal_synview_get_ref_sequences($genome_id);
-  $select_chr['#options'] +=  $ref_sequences;
   return $select_chr;
 }
 
