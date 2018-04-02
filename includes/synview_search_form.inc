@@ -40,6 +40,10 @@ function synview_search_form($form, $form_state) {
 
   // retrieve prev selection from session
   $second_opt = array('SELECT_C' => 'Select a chromosome/scaffold');
+  if (isset($form_state['triggering_element']['#name']) && $form_state['triggering_element']['#name'] == 'SELECT_GENOME') {
+    $gvalue = $form_state['triggering_element']['#value'];
+    $second_opt += tripal_synview_get_ref_sequences($gvalue);
+  }
   $form['LOCATION']['SELECT_CHR'] = array(
     '#type' => 'select',
     '#title' => t('Chromosome/Scaffold:'),
@@ -47,7 +51,6 @@ function synview_search_form($form, $form_state) {
     '#suffix' => '</div>',
     '#options' => $second_opt,
     '#default_value' => isset($_SESSION['tripal_synview_search']['SELECT_CHR']) ? $_SESSION['tripal_synview_search']['SELECT_CHR'] : 'SELECT_C',
-    '#validated' => TRUE,
   );
 
   //$form['LOCATION']['START'] = array(
