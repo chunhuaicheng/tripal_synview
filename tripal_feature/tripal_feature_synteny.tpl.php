@@ -84,7 +84,7 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
   <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div>
     <p>The following gene(s) are <b>paralogous to</b> this gene:</p><?php
   $rows = array();
-  $headers = array('Feature' , 'Paralogous', 'Organism', 'Block');
+  $headers = array('Feature' , 'Paralogous', 'Organism');
 
   foreach ($paralogs_obj as $paralog) {
     $gene_name = $paralog->record->subject_id->name;
@@ -105,7 +105,7 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
       array('data'=> $paralog->record->subject_id->name, 'width' => '20%'),
       array('data'=> $para_name, 'width' => '20%'),
       array('data'=> $para_org_name, 'width' => '20%'),
-      array('data'=> $block_id, 'width' => '25%'),
+      //array('data'=> $block_id, 'width' => '25%'),
     );
   }
 
@@ -128,7 +128,7 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
       array('data'=> $paralog->record->object_id->name, 'width' => '20%'),
       array('data'=> $para_name, 'width' => '20%'),
       array('data'=> $para_org_name, 'width' => '20%'),
-      array('data'=> $block_id, 'width' => '25%'),
+      //array('data'=> $block_id, 'width' => '25%'),
     );
   }
 
@@ -152,7 +152,7 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
 
   ?><p>The following gene(s) are <b>orthologous to</b> this gene:</p><?php
   $rows = array();
-  $headers = array('Feature', 'Orthologous', 'Organism', 'Block');
+  $headers = array('Feature', 'Orthologous', 'Organism');
 
   foreach ($orthlogs_obj as $orthlog) {
     $gene_name = $orthlog->record->subject_id->name;
@@ -173,7 +173,7 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
       array('data'=> $orthlog->record->subject_id->name, 'width' => '20%'),
       array('data'=> $orth_name, 'width' => '20%'),
       array('data'=> $orth_org_name, 'width' => '20%'),
-      array('data'=> $block_id, 'width' => '25%'),
+      //array('data'=> $block_id, 'width' => '25%'),
     );
   }
 
@@ -196,7 +196,7 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
       array('data'=> $orthlog->record->object_id->name, 'width' => '20%'),
       array('data'=> $orth_name, 'width' => '20%'),
       array('data'=> $orth_org_name, 'width' => '20%'),
-      array('data'=> $block_id, 'width' => '25%'),
+      //array('data'=> $block_id, 'width' => '25%'),
     );
   }
 
@@ -216,7 +216,7 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
   print theme_table($table);
 }
 
-function get_block_id ($gid1, $gid2) {
+function get_block_id ($gid1, $gid2) {return;
 
   // get block region id for gid1 and gid2
   $values_gid1 =  array(
@@ -258,7 +258,7 @@ function get_block_id ($gid1, $gid2) {
   foreach ($blk_region_gid1 as $blk1) {
     foreach ($blk_region_gid2 as $blk2) { 
       // search block id shared by gid 1 and gid2
-      $bid = db_query('SELECT blockid FROM {synblock} WHERE (b2=:blk1 AND b1=:blk2) OR (b1=:blk1 AND b2=:blk2)', 
+       $bid = db_query('SELECT blockid FROM {synblock} WHERE (b2=:blk1 AND b1=:blk2) OR (b1=:blk1 AND b2=:blk2)', 
 			   array(
                  ':blk1' => $blk1->object_id,
                  ':blk2' => $blk2->object_id,
