@@ -27,6 +27,7 @@ $all_relationships = $feature->all_relationships;
 $object_rels = $all_relationships['object'];
 $subject_rels = $all_relationships['subject'];
 
+$synblock_ids = array();
 $paralogs_sbj = array();
 $paralogs_obj = array();
 $orthlogs_sbj = array();
@@ -37,6 +38,12 @@ if (count($object_rels) > 0 or count($subject_rels) > 0) {
   // first add in the subject relationships.
   foreach ($subject_rels as $rel_type => $rels){
 
+    if ($rel_type == 'member of') {
+      foreach($rels['syntenic_region'] AS $synblock) {
+        $synblock_ids[] = $synblock->record->object_id->feature_id;
+      }
+    }
+    
     if ($rel_type == 'paralogous to' || $rel_type == 'orthologous to') {
     } else {
       continue;
@@ -84,7 +91,7 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
   <div class="tripal_feature-data-block-desc tripal-data-block-desc"></div>
     <p>The following gene(s) are <b>paralogous to</b> this gene:</p><?php
   $rows = array();
-  $headers = array('Feature' , 'Paralogous', 'Organism');
+  $headers = array('Feature' , 'Paralogous', 'Organism', 'Block');
 
   foreach ($paralogs_obj as $paralog) {
     $gene_name = $paralog->record->subject_id->name;
@@ -99,13 +106,13 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
       $para_org_name = l($para_org_name, "node/" . $para_org->nid, array('html' => TRUE));
     }
 
-    $block_id = get_block_id($paralog->record->subject_id->feature_id, $paralog->record->object_id->feature_id);
+    $block_id = get_block_id($paralog->record->object_id->feature_id, $synblock_ids);
 
     $rows[] = array(
       array('data'=> $paralog->record->subject_id->name, 'width' => '20%'),
       array('data'=> $para_name, 'width' => '20%'),
       array('data'=> $para_org_name, 'width' => '20%'),
-      //array('data'=> $block_id, 'width' => '25%'),
+      array('data'=> $block_id, 'width' => '25%'),
     );
   }
 
@@ -122,13 +129,13 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
       $para_org_name = l($para_org_name, "node/" . $para_org->nid, array('html' => TRUE));
     }
 
-    $block_id = get_block_id($paralog->record->subject_id->feature_id, $paralog->record->object_id->feature_id);
+    $block_id = get_block_id($paralog->record->subject_id->feature_id, $synblock_ids);
 
     $rows[] = array(
       array('data'=> $paralog->record->object_id->name, 'width' => '20%'),
       array('data'=> $para_name, 'width' => '20%'),
       array('data'=> $para_org_name, 'width' => '20%'),
-      //array('data'=> $block_id, 'width' => '25%'),
+      array('data'=> $block_id, 'width' => '25%'),
     );
   }
 
@@ -152,7 +159,7 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
 
   ?><p>The following gene(s) are <b>orthologous to</b> this gene:</p><?php
   $rows = array();
-  $headers = array('Feature', 'Orthologous', 'Organism');
+  $headers = array('Feature', 'Orthologous', 'Organism', 'Block');
 
   foreach ($orthlogs_obj as $orthlog) {
     $gene_name = $orthlog->record->subject_id->name;
@@ -167,13 +174,13 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
       $orth_org_name = l($orth_org_name, "node/" . $orth_org->nid, array('html' => TRUE));
     }
 
-    $block_id = get_block_id($orthlog->record->subject_id->feature_id, $orthlog->record->object_id->feature_id);
+    $block_id = get_block_id($orthlog->record->object_id->feature_id, $synblock_ids);
 
     $rows[] = array(
       array('data'=> $orthlog->record->subject_id->name, 'width' => '20%'),
       array('data'=> $orth_name, 'width' => '20%'),
       array('data'=> $orth_org_name, 'width' => '20%'),
-      //array('data'=> $block_id, 'width' => '25%'),
+      array('data'=> $block_id, 'width' => '25%'),
     );
   }
 
@@ -190,13 +197,13 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
       $orth_org_name = l($orth_org_name, "node/" . $orth_org->nid, array('html' => TRUE));
     }
  
-    $block_id = get_block_id($orthlog->record->subject_id->feature_id, $orthlog->record->object_id->feature_id);
+    $block_id = get_block_id($orthlog->record->subject_id->feature_id, $synblock_ids);
  
     $rows[] = array(
       array('data'=> $orthlog->record->object_id->name, 'width' => '20%'),
       array('data'=> $orth_name, 'width' => '20%'),
       array('data'=> $orth_org_name, 'width' => '20%'),
-      //array('data'=> $block_id, 'width' => '25%'),
+      array('data'=> $block_id, 'width' => '25%'),
     );
   }
 
@@ -216,63 +223,25 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
   print theme_table($table);
 }
 
-function get_block_id ($gid1, $gid2) {return;
-
-  // get block region id for gid1 and gid2
-  $values_gid1 =  array(
-    'subject_id' => $gid1,
-    'type_id' => array (
-        'cv_id' => array (
-           'name' => 'sequence',
-        ),
-        'name' => 'member_of',
-        'is_obsolete' => 0
-     ),
-  );
-
-  $blk_region_gid1 = chado_select_record(
-     'feature_relationship',        
-     array('object_id'),
-     $values_gid1
-  );
-
-  $values_gid2 =  array(
-    'subject_id' => $gid2,
-    'type_id' => array ( 
-        'cv_id' => array (
-           'name' => 'sequence',
-        ),
-        'name' => 'member_of',
-        'is_obsolete' => 0
-     ),
-  );
-
-  $blk_region_gid2 = chado_select_record(
-     'feature_relationship',                      
-     array('object_id'),    
-     $values_gid2
-  );
-
-  // locate the block id shard by gid1 and gid2 
-  $blk_html = '';
-  foreach ($blk_region_gid1 as $blk1) {
-    foreach ($blk_region_gid2 as $blk2) { 
-      // search block id shared by gid 1 and gid2
-       $bid = db_query('SELECT blockid FROM {synblock} WHERE (b2=:blk1 AND b1=:blk2) OR (b1=:blk1 AND b2=:blk2)', 
-			   array(
-                 ':blk1' => $blk1->object_id,
-                 ':blk2' => $blk2->object_id,
-			   )
-		     )->fetchField();
-       $blk_html.= l($bid, "synview/block/" . $bid, array('attributes' => array('target' => "_blank")));
+function get_block_id ($gid, $synblock_ids) {
+  $block_heml = '';
+  if (is_array($synblock_ids) && $gid) {
+    $blk_sql = 
+      "SELECT object_id 
+       FROM {feature_relationship} 
+       WHERE 
+         type_id = 
+           (SELECT cvterm_id FROM {cvterm} WHERE name = 'member_of' 
+            AND cv_id = (SELECT cv_id FROM {cv} WHERE name = 'sequence'))
+       AND 
+         subject_id = :gid";
+    $bids = chado_query($blk_sql, array(':gid' => $gid));
+    while ($bid = $bids->fetchObject()) {
+      $synblock_ids [] = $bid->object_id;
     }
+    $block_id = db_query("SELECT blockid FROM {synblock} WHERE b2 IN (:blocks) AND b1 IN (:blocks)", array(':blocks' => $synblock_ids))->fetchField();
+    $block_html = $block_id ? l($block_id, "synview/block/" . $block_id, array('attributes' => array('target' => "_blank"))) : 'NA';
   }
-
-  if (empty($blk_html)) {
-    $blk_html = 'NA';
-  }
-
-
-  return $blk_html;   
+  return $block_html;
 }
 
