@@ -234,8 +234,6 @@ function synview_search_result($action) {
   }
 
   $sql = "SELECT S.blockid, S.b1, S.b2, S.score, S.evalue FROM synblock S
-     LEFT JOIN chado.feature F ON S.b1 = F.feature_id
-     LEFT JOIN chado.feature T ON S.b2 = T.feature_id 
      WHERE S.b1 IN (:bid) OR S.b2 IN (:bid)";
   $res = chado_query($sql, array(':bid' => $search_feature_id));
 
@@ -268,6 +266,12 @@ function synview_search_result($action) {
       // b1 and b2 are selected org
       $loc1 = chado_query($sql_loc, array(':feature_id'=>$b->b1))->fetchObject();
       $loc2 = chado_query($sql_loc, array(':feature_id'=>$b->b2))->fetchObject();
+      
+      // ignore the genomes that are not selected for comparsion
+      if (!key_exists($loc1->analysis_id, $ref_genome) && !key_exists($loc2->analysis_id, $ref_genome)) {
+        continue;
+      }
+      
       //if ($counter == 1) {dpm(array('genome1' => $loc1->analysis_id, 'genome2' => $loc2->analysis_id));}
       if ($loc1->analysis_id == $analysis_id and $loc2->analysis_id == $analysis_id) 
       {
