@@ -89,7 +89,7 @@ if ($block_info) {
   );
 
   $table_html = theme('table', $table);
-  print '<div class="row"> <div class="col-md-8 col-md-offset-2">' . $table_html . '</div> </div>';
+  print '<br><div class="row" style="margin:0px">' . $table_html . '</div> </div>';
 
   // display gene pairs in block
   $synteny_gene_pairs = array();
@@ -188,7 +188,7 @@ if ($block_info) {
   print '
 <div class="row"> 
 	<div class="col-md-7"> <svg id="svg" width="1000" height="800"></svg> </div>
-	<div class="col-md-5">' . $table_html . '</div> 
+	<div class="col-md-5" style="margin-top:30px;">' . $table_html . '</div> 
 </div>';
 }
 

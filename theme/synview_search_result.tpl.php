@@ -29,7 +29,7 @@ print $breadcrumb;
 // print info for searching
 print '<p><b>Selected genome and location: </b><br>';
 print ' -> Genome: ' . $genome_info->name . '<br>';
-print ' -> Location: ' . $reference . '<br></p>';
+print ' -> Location: ' . $reference . '<br><br></p>';
 print '<p><b>Genome(s) for comparison: </b></p>';
 print '</div></div>';
 
