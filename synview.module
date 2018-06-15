@@ -61,6 +61,16 @@ function synview_menu() {
   );
 
   // help
+  $items['admin/tripal/extension/tripal_synview'] = array(
+    'title' => 'Tripal Synview',
+    'description' => 'Tripal Synview Configuration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tripal_synview_admin_settings'),
+    'access arguments' => array('administer tripal'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  
+  // help
   $items['admin/tripal/extension/tripal_synview/help'] = array(
     'title' => 'Help',
     'page callback' => 'theme',
@@ -72,6 +82,31 @@ function synview_menu() {
   return $items;
 }
 
+function tripal_synview_admin_settings () {
+  $form = array();
+  $form['feature_type1'] = array(
+    '#type' => 'select',
+    '#title' => 'Feature Type 1',
+    '#description' => t('For Genome1, synteny analysis was performed using this feaure type.'),
+    '#options' => array('gene' => 'gene', 'mRNA' => 'mRNA'),
+    '#default_value' => variable_get('tripal_synview_feature_type1', 'mRNA'),
+  );
+  $form['feature_type2'] = array(
+    '#type' => 'select',
+    '#title' => 'Feature Type 2',
+    '#description' => t('For Genome2, synteny analysis was performed using this feaure type.'),
+    '#options' => array('gene' => 'gene', 'mRNA' => 'mRNA'),
+    '#default_value' => variable_get('tripal_synview_feature_type2', 'mRNA'),
+  );
+  return system_settings_form($form);
+}
+
+function tripal_synview_admin_settings_validate($form, &$form_state) {
+  $ftype1= $form_state['values']['feature_type1'];
+  $ftype2= $form_state['values']['feature_type2'];
+  variable_set('tripal_synview_feature_type1', $ftype1);
+  variable_set('tripal_synview_feature_type2', $ftype2);
+}
 /**
  * Implements hook_theme().
  */

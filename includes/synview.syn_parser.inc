@@ -343,14 +343,16 @@ function synview_check_synfile($syn_org1, $syn_org2, $syn_path, $terms) {
       $blk_value .= $line[2] . "\t" . $line[3] . "\t" . $line[4] . "\n";
 
       if ($line[2] != 'NA') {
-        $fid = chado_check_feature_exist($syn_org1, $line[2], $terms['mRNA'], 1);
+        $ftype1 = variable_get('tripal_synview_feature_type1', 'mRNA');
+        $fid = chado_check_feature_exist($syn_org1, $line[2], $terms[$ftype1], 1);
         $block['gene1'][] = array($line[2], $fid);
       } else {
         $block['gene1'][] = array($line[2], 'NA');
       }
 
       if ($line[3] != 'NA') {
-        $fid = chado_check_feature_exist($syn_org2, $line[3], $terms['mRNA'], 1);
+        $ftype2 = variable_get('tripal_synview_feature_type2', 'mRNA');
+        $fid = chado_check_feature_exist($syn_org2, $line[3], $terms[$ftype2], 1);
         $block['gene2'][] = array($line[3], $fid);
       } else {
         $block['gene2'][] = array($line[3], 'NA');
