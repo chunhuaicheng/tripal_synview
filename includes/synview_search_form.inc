@@ -101,7 +101,7 @@ function synview_search_form($form, $form_state) {
 
   $form['ID']['INPUT_ID'] = array(
     '#type' => 'textfield',
-    '#title' => t('Enter a block ID. Example:  \'hjhnB1908\' or \'abrjB0957\''),
+      '#title' => t('Example: ' . variable_get('tripal_synview_block_examples', t("'hjhnB1908' or 'abrjB0957'"))),
     '#maxlength' => 20,
   );
 

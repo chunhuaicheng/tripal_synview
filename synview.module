@@ -98,6 +98,12 @@ function tripal_synview_admin_settings () {
     '#options' => array('gene' => 'gene', 'mRNA' => 'mRNA'),
     '#default_value' => variable_get('tripal_synview_feature_type2', 'mRNA'),
   );
+  $form['block_examples'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Block Examples',
+      '#description' => 'Block example to show on the Synview Search form',
+      '#default_value' => variable_get('tripal_synview_block_examples', t("'hjhnB1908' or 'abrjB0957'"))
+  );
   return system_settings_form($form);
 }
 
@@ -106,6 +112,9 @@ function tripal_synview_admin_settings_validate($form, &$form_state) {
   $ftype2= $form_state['values']['feature_type2'];
   variable_set('tripal_synview_feature_type1', $ftype1);
   variable_set('tripal_synview_feature_type2', $ftype2);
+  //block examples
+  $block_examples = $form_state['values']['block_examples'];
+  variable_set('tripal_synview_block_examples', $block_examples);
 }
 /**
  * Implements hook_theme().
