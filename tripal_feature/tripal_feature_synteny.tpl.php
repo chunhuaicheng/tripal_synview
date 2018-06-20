@@ -163,13 +163,16 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
 
   foreach ($orthlogs_obj as $orthlog) {
     $gene_name = $orthlog->record->subject_id->name;
+    if (isset($orthlog->record->subject_id->nid)) {
+        $gene_name = l($gene_name, "node/" . $orthlog->record->subject_id->nid, array('attributes' => array('target' => "_blank")));
+    }
     $orth_name = $orthlog->record->object_id->name;
     if (property_exists($orthlog->record, 'nid')) {
       $orth_name = l($orth_name, "node/" . $orthlog->record->nid, array('attributes' => array('target' => "_blank")));
     }
 
     $orth_org  = $orthlog->record->object_id->organism_id;
-    $orth_org_name = $orthlog->record->object_id->organism_id->common_name;
+    $orth_org_name = $orthlog->record->object_id->organism_id->genus . ' ' . $orthlog->record->object_id->organism_id->species;
     if (property_exists($orth_org, 'nid')) {
       $orth_org_name = l($orth_org_name, "node/" . $orth_org->nid, array('html' => TRUE));
     }
@@ -177,7 +180,7 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
     $block_id = get_block_id($orthlog->record->object_id->feature_id, $synblock_ids);
 
     $rows[] = array(
-      array('data'=> $orthlog->record->subject_id->name, 'width' => '20%'),
+      array('data'=> $gene_name, 'width' => '20%'),
       array('data'=> $orth_name, 'width' => '20%'),
       array('data'=> $orth_org_name, 'width' => '20%'),
       array('data'=> $block_id, 'width' => '25%'),
@@ -186,13 +189,16 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
 
   foreach ($orthlogs_sbj as $orthlog) {
     $gene_name = $orthlog->record->object_id->name;
+    if (isset($orthlog->record->object_id->nid)) {
+        $gene_name = l($gene_name, "node/" . $orthlog->record->object_id->nid, array('attributes' => array('target' => "_blank")));
+    }
     $orth_name = $orthlog->record->subject_id->name;
-    if (property_exists($paralog->record, 'nid')) {
-      $orth_name = l($orth_name, "node/" . $orthlog->record->nid, array('attributes' => array('target' => "_blank")));
+    if (isset($orthlog->record->subject_id->nid)) {
+        $orth_name = l($orth_name, "node/" . $orthlog->record->subject_id->nid, array('attributes' => array('target' => "_blank")));
     }
 
     $orth_org  = $orthlog->record->subject_id->organism_id;
-    $orth_org_name = $orthlog->record->subject_id->organism_id->common_name;
+    $orth_org_name = $orthlog->record->subject_id->organism_id->genus . ' ' . $orthlog->record->subject_id->organism_id->species;
     if (property_exists($orth_org, 'nid')) {
       $orth_org_name = l($orth_org_name, "node/" . $orth_org->nid, array('html' => TRUE));
     }
@@ -200,7 +206,7 @@ if (count($orthlogs_sbj) > 0 || count($orthlogs_obj) > 0) {
     $block_id = get_block_id($orthlog->record->subject_id->feature_id, $synblock_ids);
  
     $rows[] = array(
-      array('data'=> $orthlog->record->object_id->name, 'width' => '20%'),
+      array('data'=> $gene_name, 'width' => '20%'),
       array('data'=> $orth_name, 'width' => '20%'),
       array('data'=> $orth_org_name, 'width' => '20%'),
       array('data'=> $block_id, 'width' => '25%'),
