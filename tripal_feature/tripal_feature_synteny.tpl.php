@@ -95,13 +95,16 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
 
   foreach ($paralogs_obj as $paralog) {
     $gene_name = $paralog->record->subject_id->name;
+    if (isset($paralog->record->subject_id->nid)) {
+        $gene_name = l($gene_name, "node/" . $paralog->record->subject_id->nid, array('attributes' => array('target' => "_blank")));
+    }
     $para_name = $paralog->record->object_id->name;
     if (property_exists($paralog->record, 'nid')) {
       $para_name = l($para_name, "node/" . $paralog->record->nid, array('attributes' => array('target' => "_blank")));
     }
 
     $para_org  = $paralog->record->object_id->organism_id;
-    $para_org_name = $paralog->record->object_id->organism_id->common_name;
+    $para_org_name = $paralog->record->object_id->organism_id->genus . ' ' . $paralog->record->object_id->organism_id->species;
     if (property_exists($para_org, 'nid')) {
       $para_org_name = l($para_org_name, "node/" . $para_org->nid, array('html' => TRUE));
     }
@@ -109,7 +112,7 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
     $block_id = get_block_id($paralog->record->object_id->feature_id, $synblock_ids);
 
     $rows[] = array(
-      array('data'=> $paralog->record->subject_id->name, 'width' => '20%'),
+      array('data'=> $gene_name, 'width' => '20%'),
       array('data'=> $para_name, 'width' => '20%'),
       array('data'=> $para_org_name, 'width' => '20%'),
       array('data'=> $block_id, 'width' => '25%'),
@@ -118,13 +121,16 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
 
   foreach ($paralogs_sbj as $paralog) {
     $gene_name = $paralog->record->object_id->name;
+    if (isset($paralog->record->object_id->nid)) {
+        $gene_name = l($gene_name, "node/" . $paralog->record->object_id->nid, array('attributes' => array('target' => "_blank")));
+    }
     $para_name = $paralog->record->subject_id->name;
     if (property_exists($paralog->record, 'nid')) {
       $para_name = l($para_name, "node/" . $paralog->record->nid, array('attributes' => array('target' => "_blank")));
     }
 
     $para_org  = $paralog->record->subject_id->organism_id;
-    $para_org_name = $paralog->record->subject_id->organism_id->common_name;
+    $para_org_name = $paralog->record->subject_id->organism_id->genus . ' ' . $paralog->record->subject_id->organism_id->species;
     if (property_exists($para_org, 'nid')) {
       $para_org_name = l($para_org_name, "node/" . $para_org->nid, array('html' => TRUE));
     }
@@ -132,7 +138,7 @@ if (count($paralogs_sbj) > 0 || count($paralogs_obj) > 0) { ?>
     $block_id = get_block_id($paralog->record->subject_id->feature_id, $synblock_ids);
 
     $rows[] = array(
-      array('data'=> $paralog->record->object_id->name, 'width' => '20%'),
+      array('data'=> $gene_name, 'width' => '20%'),
       array('data'=> $para_name, 'width' => '20%'),
       array('data'=> $para_org_name, 'width' => '20%'),
       array('data'=> $block_id, 'width' => '25%'),
