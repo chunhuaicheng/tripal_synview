@@ -77,7 +77,7 @@ function synview_search_form($form, $form_state) {
         '#type' => 'checkbox',
         '#title' => $genome_name,
         '#default_value' => isset($_SESSION['tripal_synview_search']['refGenome'][$genome_id]) ? 1 : 0,
-        '#prefix' => '<br><b>Choose (a) genome(s) for comparison:</b><br><span style="float: left; display: block; margin: 10px;">',
+        '#prefix' => '<br><b>Choose (a) genome(s) for comparison:</b><br><span style="display: block; margin: 10px;">',
         '#suffix' => '</span>',
       );
     } else {
@@ -85,7 +85,7 @@ function synview_search_form($form, $form_state) {
         '#type' => 'checkbox',
         '#title' => $genome_name,
         '#default_value' => isset($_SESSION['tripal_synview_search']['refGenome'][$genome_id]) ? 1 : 0,
-        '#prefix' => '<span style="float: left; display: block; margin: 10px;">',
+        '#prefix' => '<span style="display: block; margin: 10px;">',
         '#suffix' => '</span>',
       );
     }
