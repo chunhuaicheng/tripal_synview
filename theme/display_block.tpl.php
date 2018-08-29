@@ -29,6 +29,13 @@ if ($block_info) {
   if (property_exists($b1->organism_id, 'nid')) {
     $orgA = l($orgA, "node/" . $b1->organism_id->nid, array('html' => TRUE));
   }
+  if (function_exists('chado_get_record_entity_by_table')) {
+      $entity_id = chado_get_record_entity_by_table ('organism', $b1->organism_id->organism_id);
+      if ($entity_id) {
+          $olink1 = "/bio_data/$entity_id";
+          $orgA = l($orgA, $olink1, array('html' => TRUE));
+      }
+  }
 
   $rows[] = array(
     array(
@@ -55,6 +62,14 @@ if ($block_info) {
   if (property_exists($b2->organism_id, 'nid')) {
     $orgB = l($orgB, "node/" . $b2->organism_id->nid, array('html' => TRUE));
   }
+  if (function_exists('chado_get_record_entity_by_table')) {
+      $entity_id = chado_get_record_entity_by_table ('organism', $b2->organism_id->organism_id);
+      if ($entity_id) {
+          $olink2 = "/bio_data/$entity_id";
+          $orgB = l($orgB, $olink2, array('html' => TRUE));
+      }
+  }
+  
   $rows[] = array(
     array(
       'data' => 'Organism B',
@@ -127,12 +142,26 @@ if ($block_info) {
     if ($id1 != 'NA') {
       $f1 = tripal_syncview_get_feature($id1, array('mRNA', 'gene'), $b1->organism_id->organism_id);
       $nid1 = chado_get_nid_from_id ('feature', $f1->feature_id);
-      $id1_table = l($f1->name, "/node/" . $nid1, array('html' => TRUE));
+      $link1 = "/node/" . $nid1;
+      if (function_exists('chado_get_record_entity_by_table') && $f1->feature_id) {
+          $entity_id = chado_get_record_entity_by_table ('feature', $f1->feature_id);
+          if ($entity_id) {
+              $link1 = "/bio_data/$entity_id";
+          }
+      }
+      $id1_table = l($f1->name, $link1, array('html' => TRUE));
     }
     if ($id2 != 'NA') {
       $f2 = tripal_syncview_get_feature($id2, array('mRNA', 'gene'), $b2->organism_id->organism_id);
       $nid2 = chado_get_nid_from_id ('feature', $f2->feature_id);
-      $id2_table = l($f2->name, "/node/" . $nid2, array('html' => TRUE));
+      $link2 = "/node/" . $nid2;
+      if (function_exists('chado_get_record_entity_by_table') && $f2->feature_id) {
+          $entity_id = chado_get_record_entity_by_table ('feature', $f2->feature_id);
+          if ($entity_id) {
+              $link2 = "/bio_data/$entity_id";
+          }
+      }
+      $id2_table = l($f2->name, $link2, array('html' => TRUE));
     }
 
     $rows[] = array(
