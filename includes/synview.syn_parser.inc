@@ -41,7 +41,8 @@ function synview_parse_synfile($syn_org1, $syn_org2, $syn_path) {
     'orthologous_to' => NULL, 
     'member_of' => NULL,
     'gene' => NULL,
-    'mRNA' => NULL
+    'mRNA' => NULL,
+    'CDS' => NULL
   );
   foreach ($terms as $name => $term_id) {
     $cvterm = chado_select_record('cvterm', array('cvterm_id'), array('name'=>$name, 'cv_id'=>array('name' => 'sequence')));

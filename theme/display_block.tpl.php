@@ -140,7 +140,7 @@ if ($block_info) {
 
     // quick, just 500ms to display, must set /feature/gene/ to dispaly gene feature, not universal
     if ($id1 != 'NA') {
-      $f1 = tripal_syncview_get_feature($id1, array('mRNA', 'gene'), $b1->organism_id->organism_id);
+      $f1 = tripal_syncview_get_feature($id1, array('mRNA', 'gene', 'CDS'), $b1->organism_id->organism_id);
       $nid1 = chado_get_nid_from_id ('feature', $f1->feature_id);
       $link1 = "/node/" . $nid1;
       if (function_exists('chado_get_record_entity_by_table') && $f1->feature_id) {
@@ -152,7 +152,7 @@ if ($block_info) {
       $id1_table = l($f1->name, $link1, array('html' => TRUE));
     }
     if ($id2 != 'NA') {
-      $f2 = tripal_syncview_get_feature($id2, array('mRNA', 'gene'), $b2->organism_id->organism_id);
+      $f2 = tripal_syncview_get_feature($id2, array('mRNA', 'gene', 'CDS'), $b2->organism_id->organism_id);
       $nid2 = chado_get_nid_from_id ('feature', $f2->feature_id);
       $link2 = "/node/" . $nid2;
       if (function_exists('chado_get_record_entity_by_table') && $f2->feature_id) {

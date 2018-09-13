@@ -50,7 +50,7 @@ if (count($object_rels) > 0 or count($subject_rels) > 0) {
     }
 
     foreach ($rels as $obj_type => $objects){
-      if ($obj_type == 'gene' || $obj_type == 'mRNA') {
+        if ($obj_type == 'gene' || $obj_type == 'mRNA' || $obj_type == 'CDS') {
         if ($rel_type == 'paralogous to') {
           $paralogs_obj = $objects;
         }
@@ -72,7 +72,7 @@ if (count($object_rels) > 0 or count($subject_rels) > 0) {
     foreach ($rels as $subject_type => $subjects){
       $verb = 'are';
       // only consider the gene feature as paralogous or orthlogous
-      if ($subject_type == 'gene' || $subject_type == 'mRNA') { 
+      if ($subject_type == 'gene' || $subject_type == 'mRNA' || $subject_type == 'CDS') { 
         if ($rel_type == 'paralogous to') {
           $paralogs_sbj = $subjects;
         }

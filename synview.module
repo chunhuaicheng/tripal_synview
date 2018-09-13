@@ -88,14 +88,14 @@ function tripal_synview_admin_settings () {
     '#type' => 'select',
     '#title' => 'Feature Type 1',
     '#description' => t('For Genome1, synteny analysis was performed using this feaure type.'),
-    '#options' => array('gene' => 'gene', 'mRNA' => 'mRNA'),
+    '#options' => array('gene' => 'gene', 'mRNA' => 'mRNA', 'CDS' => 'CDS'),
     '#default_value' => variable_get('tripal_synview_feature_type1', 'mRNA'),
   );
   $form['feature_type2'] = array(
     '#type' => 'select',
     '#title' => 'Feature Type 2',
     '#description' => t('For Genome2, synteny analysis was performed using this feaure type.'),
-    '#options' => array('gene' => 'gene', 'mRNA' => 'mRNA'),
+    '#options' => array('gene' => 'gene', 'mRNA' => 'mRNA', 'CDS' => 'CDS'),
     '#default_value' => variable_get('tripal_synview_feature_type2', 'mRNA'),
   );
   $form['block_examples'] = array(
@@ -104,17 +104,79 @@ function tripal_synview_admin_settings () {
       '#description' => 'Block example to show on the Synview Search form',
       '#default_value' => variable_get('tripal_synview_block_examples', t("'hjhnB1908' or 'abrjB0957'"))
   );
+  $form['genomes'] = array(
+      '#type' => 'fieldset',
+      '#title' => 'Genome Grouping',
+      '#description' => 'Categorize genomes into groups so synteny comparison will be made only within each group. 
+                                       For example, you can have prokaryote and eukaryote groups so that the genomes in one group 
+                                       won\'t be compared to the ones in the other group. Please note that if you enable the grouping, 
+                                       genomes that do not belong to any group will not be shown. Clearing all group names will reset
+                                       Synteny Viewer to no grouping.',
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE
+  );
+  $gtitle = variable_get('tripal_synview_grouping_title', 'Genome Category');
+  $form['genomes']['grouping_title'] = array(
+    '#type' => 'textfield',
+    '#title' => 'Title (Display Only)',
+    '#description' => 'Title to show on the search form for genome grouping',
+    '#default_value' => $gtitle,
+  );
+  $genomes = tripal_synview_get_genomes(TRUE);
+  asort($genomes);
+  $genome_groups = variable_get('tripal_synview_genome_groups');
+  $gval = array();
+  foreach ($genome_groups AS $k => $vals) {
+    foreach ($vals AS $id => $v) {
+      $gval[$id] = $k;
+    }
+  }
+  foreach ($genomes AS $analysis_id => $genome) {
+      $form['genomes']['genome_' . $analysis_id] = array(
+          '#type' => textfield,
+          '#title' => 'Group for ' . $genome,
+          '#default_value' => isset($gval[$analysis_id]) ? $gval[$analysis_id] : '',
+      );
+  }
   return system_settings_form($form);
 }
 
 function tripal_synview_admin_settings_validate($form, &$form_state) {
+  // featyre types
   $ftype1= $form_state['values']['feature_type1'];
   $ftype2= $form_state['values']['feature_type2'];
   variable_set('tripal_synview_feature_type1', $ftype1);
   variable_set('tripal_synview_feature_type2', $ftype2);
+  
   //block examples
   $block_examples = $form_state['values']['block_examples'];
   variable_set('tripal_synview_block_examples', $block_examples);
+  
+  // genome grouping
+  $genomes = tripal_synview_get_genomes(TRUE);
+  $genome_groups = array();
+  $has_group = FALSE;
+  foreach ($genomes AS $analysis_id => $genome) {
+    $grp = trim($form_state['values']['genome_' . $analysis_id]);
+    if ($grp) {
+      $has_group = TRUE;
+      if (array_key_exists($grp, $genome_groups)) {
+        $genome_groups[$grp][$analysis_id] = $genome;
+      }
+      else {
+        $genome_groups[$grp] = array($analysis_id => $genome);
+      }
+    }
+  }
+  $gtitle = $form_state['values']['grouping_title'];
+  variable_set('tripal_synview_grouping_title', $gtitle);
+  if ($has_group) {
+    variable_set('tripal_synview_genome_groups', $genome_groups);
+  }
+  else {
+    variable_del('tripal_synview_genome_groups');
+  }
+  
 }
 /**
  * Implements hook_theme().

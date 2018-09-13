@@ -147,7 +147,7 @@ function tripal_synview_get_ref_sequences($analysis_id) {
   return $seqs;
 }
 
-function tripal_syncview_get_feature ($uniquename, $types = array('mRNA', 'gene'), $organism_id = NULL) {
+function tripal_syncview_get_feature ($uniquename, $types = array('mRNA', 'gene', 'CDS'), $organism_id = NULL) {
   $sql = 
   "SELECT feature_id, name FROM {feature} 
     WHERE uniquename = :uniquename 

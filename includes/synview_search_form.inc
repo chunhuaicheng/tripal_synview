@@ -9,7 +9,7 @@
  * generate form for search syn.
  */
 function synview_search_form($form, $form_state) {
-
+    
   // search block by genome, chr, start, end 
   $first_opt = array('SELECT_G' => 'Select a genome');
 
@@ -22,79 +22,125 @@ function synview_search_form($form, $form_state) {
     '#title' => t('Search blocks by a given location.'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE,
-  );
-
-  $form['LOCATION']['SELECT_GENOME'] = array(
-    '#type' => 'select',
-    '#title' => t('Genome:'),
-    '#options' => $genome_opts,
-    '#default_value' =>'SELECT_G', // put default db for different web
-    '#ajax' => array(
-      'event' => 'change',
-      'callback' => 'ajax_synview_location_callback',
-      'method'   => 'replace',
-      'wrapper'  => 'id-textarea',
-      'effect'   => 'fade',
-    ),
-  );
-
-  // retrieve prev selection from session
-  $second_opt = array('SELECT_C' => 'Select a chromosome/scaffold');
-  if (isset($form_state['triggering_element']['#name']) && $form_state['triggering_element']['#name'] == 'SELECT_GENOME') {
-    $gvalue = $form_state['triggering_element']['#value'];
-    $second_opt += tripal_synview_get_ref_sequences($gvalue);
-  }
-  $form['LOCATION']['SELECT_CHR'] = array(
-    '#type' => 'select',
-    '#title' => t('Chromosome/Scaffold:'),
-    '#prefix' => '<div id="id-textarea">',
+    '#prefix' => '<div id="tripal_synview-location">',
     '#suffix' => '</div>',
-    '#options' => $second_opt,
-    '#default_value' => isset($_SESSION['tripal_synview_search']['SELECT_CHR']) ? $_SESSION['tripal_synview_search']['SELECT_CHR'] : 'SELECT_C',
   );
-
-  //$form['LOCATION']['START'] = array(
-  //  '#type' => 'textfield',
-  //  '#title' => t('Start:'),
-  //  '#maxlength' => 20,
-  //  '#default_value' => isset($_SESSION['tripal_synview_search']['START']) ? $_SESSION['tripal_synview_search']['START'] : '',
-  //  '#prefix' =>'<div id=xyz>',
-  //);
-  //$form['LOCATION']['END'] = array(
-  //  '#type' => 'textfield',
-  //  '#title' => t('End:'),
-  //  '#maxlength' => 20,
-  //  '#default_value' => isset($_SESSION['tripal_synview_search']['END']) ? $_SESSION['tripal_synview_search']['END'] : '',
-  //  '#suffix' =>'</div>',
-  //);
-
-  $n = 0;
-  foreach ($form['#genome_opts'] as $genome_id => $genome_name) {
-    $label = "GENOME_" . $genome_id;
-    $n++;
-    if ($n == 1) {
-      $form['LOCATION'][$label] = array(
-        '#type' => 'checkbox',
-        '#title' => $genome_name,
-        '#default_value' => isset($_SESSION['tripal_synview_search']['refGenome'][$genome_id]) ? 1 : 0,
-        '#prefix' => '<br><b>Choose (a) genome(s) for comparison:</b><br><span style="display: block; margin: 10px;">',
-        '#suffix' => '</span>',
-      );
-    } else {
-      $form['LOCATION'][$label] = array(
-        '#type' => 'checkbox',
-        '#title' => $genome_name,
-        '#default_value' => isset($_SESSION['tripal_synview_search']['refGenome'][$genome_id]) ? 1 : 0,
-        '#prefix' => '<span style="display: block; margin: 10px;">',
-        '#suffix' => '</span>',
-      );
+  
+  // Handle the Genome Groups
+  $genome_groups = variable_get('tripal_synview_genome_groups');
+  $selected_group = isset($form_state['values']['GENOME_GROUPS']) ? $form_state['values']['GENOME_GROUPS'] : 0;
+  $opt_groups = array('Select a Category');
+  if ($genome_groups) {
+    foreach(array_keys($genome_groups) AS $k) {
+      $opt_groups[$k] = $k;
+    }
+    $gtitle = variable_get('tripal_synview_grouping_title', 'Genome Category');
+    $form['LOCATION']['GENOME_GROUPS'] = array(
+      '#type' => 'select',
+      '#title' => $gtitle,
+      '#description' => 'Select to show available genomes',
+      '#options' => $opt_groups,
+      '#default_value' => 0,
+      '#ajax' => array(
+        'event' => 'change',
+        'callback' => 'tripal_synview_genome_group_ajax_callback',
+        'method'   => 'replace',
+        'wrapper'  => 'tripal_synview-location',
+        'effect'   => 'fade',
+      ),
+    );
+    if ($selected_group) {
+      foreach ($genome_opts AS $gid => $gval) {
+        if ($gid != 'SELECT_G' && !in_array($gid, array_keys($genome_groups[$selected_group]))) {
+          unset($genome_opts[$gid]);
+        }
+      }
     }
   }
 
+  if (!$genome_groups || $selected_group) {
+    $form['LOCATION']['SELECT_GENOME'] = array(
+      '#type' => 'select',
+      '#title' => t('Genome:'),
+      '#options' => $genome_opts,
+      '#default_value' =>'SELECT_G', // put default db for different web
+      '#ajax' => array(
+        'event' => 'change',
+        'callback' => 'ajax_synview_location_callback',
+        'method'   => 'replace',
+        'wrapper'  => 'id-textarea',
+        'effect'   => 'fade',
+      ),
+    );
+  
+    // retrieve prev selection from session
+    $second_opt = array('SELECT_C' => 'Select a chromosome/scaffold');
+    if (isset($form_state['triggering_element']['#name']) && $form_state['triggering_element']['#name'] == 'SELECT_GENOME') {
+      $gvalue = $form_state['triggering_element']['#value'];
+      $second_opt += tripal_synview_get_ref_sequences($gvalue);
+    }
+    $form['LOCATION']['SELECT_CHR'] = array(
+      '#type' => 'select',
+      '#title' => t('Chromosome/Scaffold:'),
+      '#prefix' => '<div id="id-textarea">',
+      '#suffix' => '</div>',
+      '#options' => $second_opt,
+      '#default_value' => isset($_SESSION['tripal_synview_search']['SELECT_CHR']) ? $_SESSION['tripal_synview_search']['SELECT_CHR'] : 'SELECT_C',
+    );
+  
+    //$form['LOCATION']['START'] = array(
+    //  '#type' => 'textfield',
+    //  '#title' => t('Start:'),
+    //  '#maxlength' => 20,
+    //  '#default_value' => isset($_SESSION['tripal_synview_search']['START']) ? $_SESSION['tripal_synview_search']['START'] : '',
+    //  '#prefix' =>'<div id=xyz>',
+    //);
+    //$form['LOCATION']['END'] = array(
+    //  '#type' => 'textfield',
+    //  '#title' => t('End:'),
+    //  '#maxlength' => 20,
+    //  '#default_value' => isset($_SESSION['tripal_synview_search']['END']) ? $_SESSION['tripal_synview_search']['END'] : '',
+    //  '#suffix' =>'</div>',
+    //);
+  
+    $n = 0;
+    foreach ($form['#genome_opts'] as $genome_id => $genome_name) {
+      if ($genome_groups && $selected_group) {
+        if ( !in_array($genome_id, array_keys($genome_groups[$selected_group]))) {
+          continue;
+        }
+      }
+      $label = "GENOME_" . $genome_id;
+      $n++;
+      if ($n == 1) {
+        $form['LOCATION'][$label] = array(
+          '#type' => 'checkbox',
+          '#title' => $genome_name,
+          '#default_value' => 0,
+          '#prefix' => '<br><b>Choose (a) genome(s) for comparison:</b><br><span style="display: block; margin: 10px;">',
+          '#suffix' => '</span>',
+        );
+      } else {
+        $form['LOCATION'][$label] = array(
+          '#type' => 'checkbox',
+          '#title' => $genome_name,
+          '#default_value' =>0,
+          '#prefix' => '<span style="display: block; margin: 10px;">',
+          '#suffix' => '</span>',
+        );
+      }
+    }
+  }
+
+  $form['separator'] = array(
+    '#markup' => '<h3>or</h3>',
+    '#prefix' => '<div id="tripal_synview_form-separator" style="margin: 15px 0px">',
+    '#suffix' => '</div>'
+  );
   //.........................
   $form['ID'] = array(
     '#type' => 'fieldset',
-    '#title' => t('<b>OR</b> Search a block by its ID.'),
+    '#title' => t('Search a block by its ID.'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE,
   );
@@ -258,3 +304,6 @@ function ajax_synview_location_callback($form, $form_state) {
   return $form['LOCATION']['SELECT_CHR'];
 }
 
+function tripal_synview_genome_group_ajax_callback($form, $form_state) {
+  return $form['LOCATION'];
+}
