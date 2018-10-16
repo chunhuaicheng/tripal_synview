@@ -184,7 +184,7 @@
 				return "<a href=/feature/" + data_B[d][0] + " target=_blank>" + data_B[d][0] + "</a>";
 			}
 			let gene_space = scale_B(data_B[d][1]) - scale_B(data_B[initB][1]);
-			if (gene_space > 14) {
+			if (Math.abs(gene_space) > 14) {
 				initB = d;
 				return "<a href=/feature/" + data_B[d][0] + " target=_blank>" + data_B[d][0] + "</a>"; 
 			}

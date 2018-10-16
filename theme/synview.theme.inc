@@ -66,7 +66,8 @@ function synview_preprocess_display_block(&$vars) {
 
   // save block value to array
   $block_info = array();
-  $gene_array = array(); 
+  $gene_array1 = array();
+  $gene_array2 = array();
  
   if ($vars['record']->value) {
     $lines = explode("\n", $vars['record']->value);
@@ -76,23 +77,28 @@ function synview_preprocess_display_block(&$vars) {
         $block_info[] = $m;
       }
       if (isset($m[0]) && $m[0] != 'NA') {
-        $gene_array[] = $m[0];
+        $gene_array1[] = $m[0];
       }
       if (isset($m[1]) && $m[1] != 'NA') {
-        $gene_array[] = $m[1];
+        $gene_array2[] = $m[1];
       }
     }
   }
   $vars['block_info'] = $block_info;
-
+  $sfeature_id1 = $b1->featureloc->feature_id->srcfeature_id->feature_id;
+  $sfeature_id2 = $b2->featureloc->feature_id->srcfeature_id->feature_id;
   // get the genes location 
   $gene_position = array();
   $sql_gene_loc = 'SELECT F.uniquename, F.name, FL.fmin, FL.fmax FROM {feature} F 
     LEFT JOIN {featureloc} FL ON F.feature_id = FL.feature_id
-    WHERE F.uniquename IN (:genes)';
-  $result_gene_array = chado_query($sql_gene_loc, array(':genes' => $gene_array));
+    WHERE F.uniquename IN (:genes) AND srcfeature_id = :srcfeature_id';
+  $result_gene_array = chado_query($sql_gene_loc, array(':genes' => $gene_array1, ':srcfeature_id' => $sfeature_id1));
   foreach ($result_gene_array as $gene_pos) {
     $gene_position[$gene_pos->uniquename] = array('name' => $gene_pos->name, 'fmin' => $gene_pos->fmin, 'fmax' => $gene_pos->fmax);
+  }
+  $result_gene_array = chado_query($sql_gene_loc, array(':genes' => $gene_array2, ':srcfeature_id' => $sfeature_id2));
+  foreach ($result_gene_array as $gene_pos) {
+      $gene_position[$gene_pos->uniquename] = array('name' => $gene_pos->name, 'fmin' => $gene_pos->fmin, 'fmax' => $gene_pos->fmax);
   }
   $vars['gene_position'] = $gene_position;
 }
