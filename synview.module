@@ -138,6 +138,14 @@ function tripal_synview_admin_settings () {
           '#default_value' => isset($gval[$analysis_id]) ? $gval[$analysis_id] : '',
       );
   }
+  $disabled_genomes = variable_get('tripal_synview_disabled_genomes');
+  $form['disabled_genomes'] = array(
+    '#type' => 'checkboxes',
+    '#options' => $genomes,
+    '#title' => 'Disable the following genome(s) from the Synview search form',
+    '#description' => "Check boxes for the unpublished genomes that you want to hide from the users.",
+    '#default_value' => $disabled_genomes
+  );
   return system_settings_form($form);
 }
 
@@ -177,6 +185,9 @@ function tripal_synview_admin_settings_validate($form, &$form_state) {
     variable_del('tripal_synview_genome_groups');
   }
   
+  // hide genomes
+  $disabled_genomes = $form_state['values']['disabled_genomes'];
+  variable_set('tripal_synview_disabled_genomes', $disabled_genomes);
 }
 /**
  * Implements hook_theme().

@@ -14,6 +14,13 @@ function synview_search_form($form, $form_state) {
   $first_opt = array('SELECT_G' => 'Select a genome');
 
   $genome_opts = tripal_synview_get_genomes(TRUE);
+  // hide disabled genomes
+  $disabled_genomes = variable_get('tripal_synview_disabled_genomes');
+  foreach ($disabled_genomes AS $id => $has_value) {
+    if ($has_value != 0) {
+      unset ($genome_opts[$id]);
+    }
+  }
   $form['#genome_opts']  = $genome_opts; // pass org array through from
   $genome_opts = $first_opt + $genome_opts;
 
