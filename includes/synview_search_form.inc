@@ -15,7 +15,7 @@ function synview_search_form($form, $form_state) {
 
   $genome_opts = tripal_synview_get_genomes(TRUE);
   // hide disabled genomes
-  $disabled_genomes = variable_get('tripal_synview_disabled_genomes') ? variable_get('tripal_synview_disabled_genomes') : array();
+  $disabled_genomes = variable_get('tripal_synview_disabled_genomes', array());
   foreach ($disabled_genomes AS $id => $has_value) {
     if ($has_value != 0) {
       unset ($genome_opts[$id]);
