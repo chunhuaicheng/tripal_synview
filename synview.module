@@ -138,7 +138,7 @@ function tripal_synview_admin_settings () {
           '#default_value' => isset($gval[$analysis_id]) ? $gval[$analysis_id] : '',
       );
   }
-  $disabled_genomes = variable_get('tripal_synview_disabled_genomes');
+  $disabled_genomes = variable_get('tripal_synview_disabled_genomes') ? variable_get('tripal_synview_disabled_genomes') : array();
   $form['disabled_genomes'] = array(
     '#type' => 'checkboxes',
     '#options' => $genomes,
